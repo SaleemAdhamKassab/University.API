@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using University.API.Models;
-using static University.API.Portals.Employees.CoursesManagement.CourseManagementService;
-using static University.API.Portals.Students.RegisterForCourses.RegisterForCoursesService;
+using University.API.Services.Auth;
+using University.API.Services.Students;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,15 +18,43 @@ builder.Services.AddSwaggerGen();
 //builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("RemoteDb")));
 
-builder.Services.AddScoped<ICourseManagement, CourseManagement>();
-builder.Services.AddScoped<IRegisterForCourses, RegisterForCourses>();
+builder.Services.AddScoped<IStudentsService, StudentsService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy("AllowUniversity.SPA",
-		builder => builder.WithOrigins("http://localhost:4200")
-						  .AllowAnyHeader()
-						  .AllowAnyMethod());
+	options.AddDefaultPolicy(builder =>
+	{
+		builder
+			.WithOrigins("http://localhost:4200") // Replace with your Angular app URL
+			.AllowAnyHeader()
+			.AllowAnyMethod();
+	});
 });
+
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
+builder.Services.AddAuthentication(x =>
+{
+	x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+	x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(x =>
+{
+	x.RequireHttpsMetadata = false;
+	x.SaveToken = true;
+	x.TokenValidationParameters = new TokenValidationParameters
+	{
+		ValidateIssuerSigningKey = true,
+		IssuerSigningKey = new SymmetricSecurityKey(key),
+		ValidateIssuer = true,
+		ValidIssuer = jwtSettings["Issuer"],
+		ValidateAudience = true,
+		ValidAudience = jwtSettings["Audience"]
+	};
+});
+builder.Services.AddAuthentication();
 
 var app = builder.Build();
 
@@ -34,11 +65,10 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseHttpsRedirection();
-app.UseCors("AllowUniversity.SPA");
-
+app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseStaticFiles();
 app.MapControllers();
-
 app.Run();

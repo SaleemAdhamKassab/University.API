@@ -1,4 +1,4 @@
-﻿namespace University.API.Portals.Students.RegisterForCourses
+﻿namespace University.API.Services.Students
 {
     public class StudentCourse
     {
