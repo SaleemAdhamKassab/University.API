@@ -1,13 +1,10 @@
-﻿namespace University.API.Services.Students
-{
-    public class StudentCourse
-    {
-        public int CourseId { get; set; }
-        public string CourseName { get; set; }
-    }
+﻿using System.ComponentModel.DataAnnotations;
 
-    public class PaymentViewModel
+namespace University.API.Models
+{
+    public class Payment
     {
+        [Key]
         public int Id { get; set; }
         public string Description { get; set; }
         public string Status { get; set; }
@@ -18,5 +15,8 @@
         public string Program { get; set; }
         public string Link { get; set; }
         public DateTime AddedOn { get; set; }
+
+        public int StudentId { get; set; }
+        public Student Student { get; set; }
     }
 }

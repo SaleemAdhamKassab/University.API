@@ -11,15 +11,6 @@ namespace University.API.Models
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<StudentCourse> StudentCourses { get; set; }
-
-        //protected override void OnModelCreating(ModelBuilder builder)
-        //{
-        //    //builder.Entity<User>()
-        //    //    .HasIndex(u => u.Email)
-        //    //    .IsUnique();
-        //    //builder.Entity<User>()
-        //    //    .HasIndex(u => u.Username)
-        //    //    .IsUnique();
-        //}
+        public DbSet<Payment> Payments { get; set; }
     }
 }

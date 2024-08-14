@@ -1,8 +1,8 @@
-﻿namespace University.API.DTOs
+﻿namespace University.API.Dtos
 {
     public class StudentCoursesDto
     {
-        public int StudentId { get; set; }
+        public string Email { get; set; }
         public List<int> CoursesIds { get; set; }
     }
 }

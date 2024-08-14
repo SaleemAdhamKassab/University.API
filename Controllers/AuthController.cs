@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using University.API.DTOs;
+using University.API.Dtos;
 using University.API.Services.Auth;
 
 namespace University.API.Controllers
